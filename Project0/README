@@ -1,0 +1,61 @@
+CS 111 Project 0
+
+NAME: Austin Zhang
+EMAIL: aus.zhang@gmail.com
+ID: 604736503
+
+Files included:
+
+lab0.c
+
+A C source file that copies standard input to standard output. This file
+is built into an executable called lab0 and accepts the following 
+arguments:
+
+--input=filename ~ Uses filename as standard input
+
+--output=filename ~ Creates filename and uses it as standard output
+
+--segfault ~ Forces a segmentation fault by assigning a null pointer
+
+--catch ~ registers a SIGSEGV handler that catches the segmentation fault
+
+
+Makefile
+
+Supports the following targets:
+
+default ~ builds the lab0 executable with the -Wall and -Wextra options
+
+check ~ runs the smoke-test to check the program's basic functionality
+
+clean ~ deletes all files created by the Makefile
+
+dist ~ builds the distribution tarball
+
+
+backtrace.png
+
+A screenshot showing the segfault and associated stack-trace
+
+
+breakpoint.png
+
+A screenshot showing a breakpoint and variable inspection
+
+
+test0
+
+A file used for testing smoke_test.sh
+
+
+smoke_test.sh
+
+A bash script containing the smoke-tests: a few quick tests to ensure 
+the program runs properly
+
+
+REFERENCES
+
+1. man7.org for documentation on POSIX file operators and getopt
+2. gnu.org to learn how to create a Makefile
