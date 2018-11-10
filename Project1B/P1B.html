@@ -6,31 +6,17 @@
 <body>
 <center>
 <h1>Project 1B<br>
-Compressed Network Communication</h1>
+Encrypted Network Communication</h1>
 </center>
 
 <h2> INTRODUCTION: </h2>
-<P>
-When an application (e.g., shell) is to be used remotely, it is usually not sufficient to
-simply replace local device I/O (e.g., between the user's terminal and the shell) with network
-I/O.  Remote sessions and network protocols add options and behaviors that did not exist when
-the application was being used locally.  
-To handle this additional processing without making any changes to the application, it is
-common to create client-side and server-side agents that handle the network communication
-and shield the application from the complexities of the remote access protocols.
-Such intermediary agents can implement valuable features (e.g., encrypting traffic for
-enhanced security or compressing traffic to improve the performance and reduce the cost
-of WAN-scale communication), completely transparently to the user and application.
-</P>
-<P>
 In this project, you will build a multi-process telnet-like client and 
 server. This project is a continuation of Project 1A. It can be broken 
 up into two major steps: 
 <ul>
 	<li> Passing input and output over a TCP socket </li>
-	<li> Compressing communication between the client and server</li>
+	<li> Encrypting communication </li>
 </ul>
-</P>
 
 <h2> RELATION TO READING AND LECTURES: </h2>
 <p>
@@ -42,7 +28,7 @@ but it is really about researching and exploiting APIs.
 <ul>
 	<li> Demonstrate the ability to research new APIs and debug code that exploits them </li>
 	<li> Demonstrate ability to do basic network communication </li>
-	<li> Demonstrate ability to do exploit a new library</li>
+	<li> Demonstrate ability to do basic encryption </li>
 	<li> Develop multi-process debugging skills </li>
 </ul>
 
@@ -51,7 +37,7 @@ but it is really about researching and exploiting APIs.
 A single tarball (<tt>.tar.gz</tt>) containing:
 <ul>
 	<li> C source modules that compile cleanly (with no errors or warnings). 
-		You will have (at least) two source files: 
+		You will have (at lesat) two source files: 
 		<tt>lab1b-client.c</tt> and <tt>lab1b-server.c</tt>, 
 		which should compile to the executables 
 		<tt>lab1b-client</tt> and <tt>lab1b-server</tt>,
@@ -66,24 +52,18 @@ A single tarball (<tt>.tar.gz</tt>) containing:
 	     It should also have the (now) traditional <tt>clean</tt> and <tt>dist</tt>
 	     targets.
 	     </li>
+	<li> a <tt>my.key</tt> file, containing the encryption key to be used
+		in the second part of this project.  </li>
 	<li> a <tt>README</tt> file describing the contents of the tarball and
 	     anything interesting you would like to bring to our attention
-	 (e.g., research, limitations, features, testing methodology).</LI>
+	 (e.g. research, limitations, features, testing methodology).</LI>
 </ul>
 
 <h2> PROJECT DESCRIPTION: </h2>
-Study the following documentation:
+Study the following man pages:
 <ul>
-	<li> <a href="http://man7.org/linux/man-pages/man7/socket.7.html">socket(7)</a>
-	     ... for creating communication endpoints (networking) </li>
-	<li> <a href="https://www.zlib.net/manual.html">zlib(3)</a> and the
-	     <a href="https://www.zlib.net/zlib_how.html">zlib tutorial</a>
-	     ... a library for peforming 
-	     <a href="https://en.wikipedia.org/wiki/Gzip">gzip</a>
-	     compression and decompression (based on a combination of
-	     <a href="https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch">LZW</a> and
-	     <a href="https://en.wikipedia.org/wiki/Huffman_coding">Huffman</a> coding)
-	     </li>
+	<li> mcrypt(3) ...a data encryption library (aka libmcrypt) </li>
+	<li> socket(7) ...for creating communication endpoints (networking) </li>
 </ul>
 
 <h3>Passing input and output over a TCP socket</h3>
@@ -120,8 +100,8 @@ The first two are connected via TCP connection, and the last two are connected v
 		the server like any other character.</li>
 	<li> if a <em>^C</em> is entered on the terminal, simply pass it through to the
 		server like any other character.</li>
-	<li> In the second part of this project we will add a
-		<strong><tt>--compress</tt></strong> switch to the client.</li>
+	<li> In the second part of this project we will add an
+		<strong><tt>--encrypt=</tt></strong><em>filename</em> flag to the client.</li>
 	<li> If the client encounters an unrecognized argument it should print
 		an informative usage message (on stderr) and exit with a return code of 1.
 		If any system call fails, it should print an informative
@@ -140,16 +120,16 @@ parameter you should be able to access a shell session from other computers.
 		commands and send them to the shell, and will "serve" the client the 
 		outputs of those commands. </li>
 	<li>The server program will listen on a network socket (port specified with
-		the mandatory <strong><tt>--port=</tt></strong> command line parameter).  </li>
+		the mandatory <strong><tt>--port=</tt></strong> command line parameter.  </li>
 
-	<li> Accept a connection when it is made. </li>
-	<li> Once a connection is made, fork a child process, 
+	<li> accept a connection when it is made </li>
+	<li> once a connection is made, fork a child process, 
 		which will exec a shell to process commands received; 
 		the server process should communicate with the shell via pipes
 		(as you did in Project 1A).  </li>
-	<li> Redirect the shell process's stdin/stdout/stderr to the appropriate pipe ends 
+	<li> redirect the shell process's stdin/stdout/stderr to the appropriate pipe ends 
 		(similar to what you did in Project 1A).</li>
-	<li> Input received through the network socket should be forwarded
+	<li> input received through the network socket should be forwarded
 		through the pipe to the shell.
 		Because the server forks the shell (and knows its process ID),
 		the processing of <em>^C</em> (turning it into a <tt>SIGINT</tt>
@@ -157,14 +137,14 @@ parameter you should be able to access a shell session from other computers.
 		Similarly, when the server encounters a <em>^D</em> it should
 		close the write side of the pipe to the shell
 		(as was done in project 1A).</li>
-	<li> Input received from the shell pipes (which receive both stdout
+	<li> input received from the shell pipes (which receive both stdout
 		and stderr from the shell) should be forwarded out to the
 		network socket.</li>
 	<li> If the server gets an EOF or <tt>SIGPIPE</tt> from the shell pipes
 		(e.g., the shell exits), harvest the shell's completion status,
 		log it to stderr (as you did in project 1A), and exit with a return code of 0.</li>
 	<li> If the server gets an EOF or read error from the network connection,
-		(e.g., the client exits), close the write pipe to the shell,
+		(e.g. the client exits), close the write pipe to the shell,
 		await an EOF from the pipe from the shell, and harvest and report
 		its termination status (as above).</li>
 	<li> If the server encounters an unrecognized argument it should print
@@ -172,7 +152,7 @@ parameter you should be able to access a shell session from other computers.
 		If any system call fails, it should print an informative
 		error message (on stderr) and exit with an return code of 1.</li>
 	<li> In the second part of this project we will add a
-		<strong><tt>--compress</tt></strong> switch to the server.</li>
+		<strong><tt>--encrypt=</tt></strong><em>filename</em> flag to the server.</li>
 </ul>
 <p>
 To send commands to the shell, you will need to start both the client and 
@@ -185,16 +165,14 @@ anything (other than error messages) on the server side.
 <p>
 If you are not familiar with socket programming, you may find this
 <a href="https://www.google.com/url?q=http://www.cs.rpi.edu/~moorthy/Courses/os98/Pgms/socket.html&sa=D&ust=1475268381481000&usg=AFQjCNGfVN0HaE_dqGa5twvmuq46llwElA"> tutorial</a> 
-to be useful.  (Note that we are not expecting you to become expert in how
-compression in general or this particular form of encryption works.  Your task 
-is to understand it well enough to use it.)
+to be useful.
 </p>
 
 <p>
 Choose a random port number (greater than 1024) for your testing.
 Port numbers below 1024 are reserved.
-Be advised that listens may remain active for several seconds after the server exits.
-This means that you may get occasional socket-in-use errors if you restart the server before 
+Be advised that listens may remain active for several seconds after the server exits;
+This means that you may get occasional socket-in-use errors if you the server before 
 the old listen is taken down.
 </p>
 
@@ -227,7 +205,7 @@ the client, server, and shell should all be gone.  There should be no remaining 
 
 <h3>The <tt>--log</tt> option</h3>
 <p>
-To ensure that compression is being correctly done, we will ask you to add a
+To ensure that encryption is being correctly done, we will ask you to add a
 <strong><tt>--log=</tt></strong><em>filename</em> option to your client.  If this
 option is specified, <u>all</u> data written to or read from the server should be logged
 to the specified file. 
@@ -249,67 +227,53 @@ Sample log format output:
 <strong><tt>RECEIVED 18 bytes: receivingreceiving</tt></strong><br>
 </ul>
 
-<h3>Compressed communication</h3>
-<P>
-The purpose of compression is to reduce the amount of space data takes up.  In
-communications scenarios, a compressed version of data will use less bandwidth to transmit
-the same data than its uncompressed form would use.  On the other hand,
-compression will require processing at the sending and receiving end before
-the data can be effectively used at the receiving process.  Sometimes the benefits
-in reduced bandwidth are worth the costs of extra processing and sometimes they
-are not, so compression is not used by default in network communications.
-While compression makes data difficult to read, unlike encryption it does
-not provide any privacy for the data, since anyone who obtains the compressed
-version of the data can use standard algorithms to decompress it.  Thus,
-compression is used for efficiency, not for privacy.  When both efficiency and 
-privacy are desired, data is first compressed, then encrypted.
-</P>
-<P>
-In this project, you will only perform compression, without encryption.  You
-will use a standard compression library to improve 
-efficiency of your socket communications.
-</P>
+<h3>Encrypted communication</h3>
 <ul>
-	<li> Depending on what system you do your development on you may need to install the 
-	    <tt>zlib</tt> package to get the compression library and its documentation.  </li>
-	<li> When working with a new library, it is often easiest to start with
-		a very simple application.  A multi-process application like our
-		client, server, and shell is intrinsically complex.  
-		You may find it much easier to get the
-		compression/decompression code working in a simple program that reads
-		from and writes to a pipe. 
-		Then, after you have it working, you can integrate that code into your
-		client and server.
-		</li>
-	<li> Add a <strong><tt>--compress</tt></strong>
+	<li> you may need to install the <tt>libmcrypt-dev</tt> package to
+	     get the encryption library and its documentation.  </li>
+	<li> add a <strong><tt>--encrypt=</tt></strong><em>keyfile</em>
 		command line option to 
-		your client and server which, if included, will enable compression
-		(of all traffic in both directions). </li>
-	<li> Modify both the client and server applications to compress 
-		traffic before sending it over the network and decompress it after 
-		receiving it.  
-		<br>
-		<strong>Note</strong> that you are not sending a continuous data stream in either
-		direction.  Rather you are sending a series of independent 
-		messages (each of which must be complete and an integer number
-		of bytes long).  
-		Make sure that you <u>choose the appropriate <tt>Z_SYNC_</tt> option</u> 
-		when you are doing your compression
-		(and decompression).
+		your client and server which, if included, will turn on encryption
+		(of all traffic in both directions) and provide the key. </li>
+	<li> Choose an encryption algorithm from Linux libmcrypt. 
+		Then modify both the client and server applications to encrypt 
+		traffic before sending it over the network and decrypt it after 
+		receiving it.  </li>
+	<li> Do encryption based on a key, taken from the file whose name
+		is specified with the <tt>--encrypt=</tt> option.
+		Create a key file and include it with your submission.
+		We will test your program with your key, and others we create.
 		</li>
-	<li> Using these options, run a session and use the
-	 	<strong><tt>--log</tt></strong> option to verify that compression 
-		and decompression are working properly. The <strong><tt>--log</tt></strong> 
-		option should record outgoing data post-compression and incoming data 
-		pre-decompression.  
-		You should expect to see:
-		<ol type="1">
-		   <li>no clear text going either to or from the shell</li>
-		   <li>a reduction in the number of bytes sent in both directions</li>
-		</ol>
-		</li>
+	<li> Using your key and encryption algorithm, run a session and use the
+	 	<strong><tt>--log</tt></strong> option to verify that encryption 
+		and decryption are working properly. The <strong><tt>--log</tt></strong> 
+		option should record outgoing data post-encryption and incoming data 
+		pre-decryption.  </li>
 	<li> Do not include your <strong><tt>--log</tt></strong> files with your 
 		submission; we will generate our own from your program.  </li>
+	<P>
+		NOTE: these are block encryption algorithms that we want to
+		apply to data streams.  You probably want to select the
+		<tt>"cfb"</tt> (8-bit Cypher-Feedback Mode).  For stream
+		encryption/decryption to work, each process will need to
+		use a separate encryption session (a separate call to
+		<tt>mcrypt_module_open</tt>) for input and output
+		(two sessions per process).
+		This is necessary because, in cypher feedback mode, the
+		encryption or decryption of any character is affected
+		by the characters that preceeded it.  If two different
+		interspersed streams use the same encryption session,
+		any difference in processing order will render decryption
+		impossible.
+	</P>
+	<P>
+		NOTE: You must use the same key and initialization vector for 
+		both the client and the server.  This means that you should
+		set the initialization vector to constant values (rather than
+		the random values you will find in many examples).  We will
+		talk about ways to securely negotiate such seeds when we
+		get into secure communications (and SSL).
+	</P>
 </ul>
 
 <P>
@@ -327,9 +291,15 @@ Your <strong>README</strong> file must include lines of the form:
 	<strong>EMAIL:</strong> <em>your email</em><br>
 	<strong>ID:</strong> <em>your student ID</em>
 </ul>
-And, if slip days are allowed on this project, and you use some:
+And, if slip days are allowed on this project, and you want to use some,
+this too must be included in the <strong>README</strong> file:
 <ul>
-	<strong>SLIPDAYS:</strong> <em>your student ID</em>,<em>#days</em>
+	<strong>SLIPDAYS:</strong> <em>#days</em>
+</ul>
+If, for instance, you wanted to use two slip-days, you would add the following
+line:
+<ul>
+	<strong>SLIPDAYS: 2</strong>
 </ul>
 Your name, student ID, and email address  should also appear as comments at the top
 of your <tt>Makefile</tt> and each source file.
@@ -372,12 +342,12 @@ Points for this project will be awarded:
 <tr> <td>5%</td>	<td> <tt>--log</tt> option properly reports received data</td></tr>
 
 <tr> <td></td> </tr>
-<tr> <td></td>		<th align="left">Compression (25% total)</th></tr>
-<tr> <td>5%</td>	<td><tt>--compress</tt> reduces number of bytes sent over the wire in both directions </td></tr>
-<tr> <td>5%</td>	<td>data is compressed before sending (tested with <tt>--log</tt> option)</td></tr>
-<tr> <td>5%</td>	<td>data is decompressed after receiving (tested with <tt>--log</tt> option)</td></tr>
-<tr> <td>5%</td>	<td>compressed commands sent to shell are properly decompressed before execution</td></tr>
-<tr> <td>5%</td>	<td>compressed output sent by shell are properly decompressed before display</td></tr>
+<tr> <td></td>		<th align="left">Encryption (25% total)</th></tr>
+<tr> <td>5%</td>	<td><tt>--encrypt</tt> option obtains and uses key file for encrypted communication </td></tr>
+<tr> <td>5%</td>	<td>data is encrypted before sending (tested with <tt>--log</tt> option)</td></tr>
+<tr> <td>5%</td>	<td>data is decrypted after receiving (tested with <tt>--log</tt> option)</td></tr>
+<tr> <td>5%</td>	<td>encrypted commands sent to shell are properly decrypted before execution</td></tr>
+<tr> <td>5%</td>	<td>encrypted outupt sent by shell are properly decrypted before display</td></tr>
 	
 <tr> <td></td> </tr>
 <tr> <td></td>		<th align="left">Code Review (10%)</th></tr>
@@ -387,3 +357,4 @@ Points for this project will be awarded:
 
 </body>
 </html>
+
