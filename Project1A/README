@@ -1,0 +1,25 @@
+NAME:	Austin Zhang
+EMAIL: 	aus.zhang@gmail.com
+ID:    	604736503
+
+lab1a.c
+Source module in C. Supports the -shell=program option with a 
+required program argument (for example, --shell=/bin/bash). This will run 
+the shell located at the program file path. Input is read from the 
+keyboard and is echoed to output. 
+
+Without any options, the keyboard is put into 
+non-canonical input mode with no echo. The input is read and is then
+written to back the display.
+
+
+Makefile
+Builds the program and supports the standard default, clean and 
+dist targets:
+
+default: builds the target with the -Wall and -Wextra options.
+
+clean: removes files created by the Makefile.
+
+dist: creates the tarball for distribution.
+

@@ -1,0 +1,22 @@
+NAME: Austin Zhang
+EMAIL: aus.zhang@gmail.com
+ID: 604736503
+
+S/N: BBGW17051128
+MAC: 2CF7F1066368
+
+Files included:
+
+my_beaglebone.jpg ~ a selfie of me holding the beaglebone
+
+connected.png ~ a screen shot from a USB terminal command session connected to my system
+
+copy.png ~ a screen shot from a local session in which I copied the hello world program from my laptop to the beaglebone
+
+build_run.png ~ a screen shot from a wifi SSH session in which I built and run the trivial hello world program
+
+git.png ~ a screen shot from a wifi SSH session in which I cloned a repository.
+
+Makefile ~ a file to build the tarball
+
+README ~ file containing the serial number of the beaglebone and the MAC address

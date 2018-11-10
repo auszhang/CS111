@@ -1,0 +1,25 @@
+NAME: Austin Zhang
+EMAIL: aus.zhang@gmail.com
+ID: 604736503
+
+lab1b-client.c ~ A C source file implementing a client that communicates with 
+the server through a socket. The user can also specify the use of twofish 
+encryption or log a record of data sent over the socket.
+
+lab1b-server.c ~ A C source file implementing a server that accepts a connection 
+from a client through a socket. The server process communicates with the shell 
+process via pipes, similar to project 1a. The (encrypted, if the option was 
+specified) output from the shell is then written to to the socket. 
+
+Makefile ~ The file including targets for building the tarball, along with the 
+standard clean and dist options. The Makefile has distinct targets for building the
+ client or building the server. 
+
+README - A file describing the contents of the tarball
+
+my.key - A file containing the encryption key obtained by mashing my keyboard.
+
+
+REFERENCES
+
+libmcrypt documentation: http://mcrypt.hellug.gr/lib/mcrypt.3.html
