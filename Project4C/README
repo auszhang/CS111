@@ -1,0 +1,13 @@
+# NAME: Austin Zhang
+# EMAIL: aus.zhang@gmail.com
+# ID: 604736503
+
+Files: 
+lab4c_tcp.c ~ C source file for TCP communication with a logging server, builds and runs on the Beaglebone, based on the temperature sensor application from the previous lab, ccepts the same commands and generates the same reports as the previous Beaglebone project, but now the input and output are from/to a network connection to a server.
+lab4c_tls.c ~ C source file for authenticated TLS session encryption that builds and runs on the Beaglebone, based on the remote logging appliance from part 1 of the lab.
+	operates by:
+		1. opening a TLS connection to the server at the specified address and port
+		2. sending (and logging) your student ID followed by a newline
+		3. sending (and logging) temperature reports over the connection
+		4. processing (and logging) commands received over the connection
+Makefile ~ Makefile that runs on the Beaglebone, supports default (build), clean, and dist targets. 

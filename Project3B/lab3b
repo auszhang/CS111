@@ -1,0 +1,15 @@
+# NAME: Austin Zhang
+# EMAIL: aus.zhang@gmail.com
+# ID: 604736503
+
+#!/bin/bash
+
+if [ $# -ne 1 ]
+then
+	echo 'Error: invalid arguments'
+	exit 1
+fi
+
+python lab3b.py $1 
+
+exit $?

@@ -1,0 +1,48 @@
+NAME: Austin Zhang
+EMAIL: aus.zhang@gmail.com
+ID: 604736503
+
+Files:
+SortedList.h ~ A provided header file describing the interfaces for linked list operations
+
+SortedList.c ~ a C source file that implements insert, delete, lookup, and length methods for a sorted doubly linked list
+
+lab2_list.c ~ a C source file that implements the specified command line options. Supports the command line options --threads, --iterations, --yield, --sync, --lists. Drives one or more parallel threads that do operations on a shared linked list, acounting for mutual exclusion on critical sections.
+
+lab_list.csv ~ all results for tests
+
+lab2_list.gp ~ provided script that runs gnuplot on the data in lab2_list.csv
+
+Makefile that supports the default, tests, graphs, profile, dist, and clean options
+
+profile.out ~ Profiling report that shows where time was spent in the un-paritioned spin lock implementation
+
+lab2b_[1:5].png ~ various graphs created by gnuplot(1) on the csv data for various parallel threads
+
+tests.sh ~ test script that is run by the Makefile in the tests option. Runs all the test cases specified by the spec
+
+
+Questions:
+
+2.3.1 ~
+In the case of using 1 thread and 2 threads, the most time is probably spent doing list operations. Because of the small number of threads, locks become available more quickly and a thread will not have to spin for very long to wait. In the case of a single thread, we obviously do not have to worry about synchronization. 
+
+These operations are the most expensive because mutex functions are expensive operations. Most of the time in high-thread spin locks is spent spinning/waiting for locks to become available. 
+
+2.3.2 ~
+The lines of code consuming most of the CPU time are as follows: 
+	while (__sync_lock_test_and_set(lock + h, 1));
+	while (__sync_lock_test_and_set(lock + i, 1));
+This becomes very expensive as more threads are involved because more threads are competing for the CPU resources.
+
+2.3.3 ~
+The average wait time for locks rises dramatically with an increasing number of threads because the threads are forced to wait for the lock to become available, all while multiple threads are waiting for the same thing. With fewer threads, this is less of an issue since there are fewer comtending threads.
+
+Completion time per operation rises with the number of contending threads, although less so than the average wait time. This is because although there are many threads waiting for the same lock, one thread, which has the lock, is making progress on its task.
+
+The wait time per operation increases at a higher rate than the completion time per operation because it has its own timer. Because all this is happening concurrently, there will be some overlap among the timings for the threads. 
+
+2.3.4 ~ 
+As the number of lists increases, the throughput increases. As the number of lists continues to increase, the throughput will increase until the thoughput maxes out, at which point continuing the increase in the number of lists will not affect the throughput. This is because at this point, each list will have its own sub list and each thread will not have to wait for another one. 
+
+The suggestion is true. The throughput on the graphs correspond to their respective points, possibly indicating that the suggestion holds.

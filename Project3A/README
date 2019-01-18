@@ -1,0 +1,9 @@
+NAME: Austin Zhang
+EMAIL: aus.zhang@gmail.com
+ID: 604736503
+
+Files: 
+
+lab3a.c ~ a C source file that reads a file system image, whose name is specified as a command line argument. Then analyzes the provided file system image and produces CSV summaries of its findings.
+
+Makefile ~ a makefile that supports the default (build), dist, and clean options. 

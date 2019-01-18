@@ -1,0 +1,69 @@
+NAME: Austin Zhang
+EMAIL: aus.zhang@gmail.com
+ID: 604736503
+
+Files:
+
+lab2_add.c ~ A C source file that implements and tests a shared variable
+
+SortedList.h ~ A provided header file describing the interfaces for linked list operations
+
+SortedList.c ~ a C source file that implements insert, delete, lookup, and length methods for a sorted doubly linked list
+
+lab2_list.c ~ a C source file that implements the specified command line options. With multiple threads, adds to a list and deletes items
+
+lab2_add.csv ~ all results for part 1 tests
+
+lab_list.csv ~ all results for part 2 tests
+
+lab2_add.gp ~ provided script that runs gnuplot on the data in lab2_add.csv
+
+lab2_list.gp ~ provided script that runs gnuplot on the data in lab2_list.csv
+
+Makefile that supports the default, build, tests, graphs, dist, and clean options
+
+lab2_add-1.png ... threads and iterations required to generate a failure (with and without yields)
+
+lab2_add-2.png ... average time per operation with and without yields.
+
+lab2_add-3.png ... average time per (single threaded) operation vs. the number of iterations.
+
+lab2_add-4.png ... threads and iterations that can run successfully with yields under each of the synchronization options.
+
+lab2_add-5.png ... average time per (protected) operation vs. the number of threads.
+
+lab2_list-1.png ... average time per (single threaded) unprotected operation vs. number of iterations (illustrating the correction of the per-operation cost for the list length).
+
+lab2_list-2.png ... threads and iterations required to generate a failure (with and without yields).
+
+lab2_list-3.png ... iterations that can run (protected) without failure.
+
+lab2_list-4.png ... (length-adjusted) cost per operation vs the number of threads for the various synchronization options.
+
+tests.sh: test script that is run by the Makefile in the tests option. Runs all the test cases specified by the spec
+
+
+Questions:
+
+2.1.1 - causing conflicts
+	If the number of iterations is small, then the multithread will be less likely to fail because it will complete before the time slice. Because of this, no thread will be interrupted and race conditions may not be detected
+	A significantly smaller number of iterations will fail, similarly because it makes the thread more likely to complete before the designated time slice.
+
+2.1.2 - cost of yielding
+	The yield option is much slower because it takes time to interrupt and switch, which is where the additional time goes. 
+	It is also not possible because we only measured wall time in the project and it is impossible to accurately measure the switch time.
+
+2.1.3 - measurement errors
+	Creating threads is expensive, so making more iterations allows us to reduce some of the costs of making new threads.
+	To find the cost, see the plot. It shows that the cost per iteration drops exponentially, where it will eventually reach a stable value after a long period of time.
+
+2.1.4 - costs of serialization 
+	For a low number of threads, there is less overhead from locking, which means they all have similar performances.
+	With more threads, however, there is more overhead from waiting for locks to be released instead of doing work.
+
+2.2.1 - scalability of mutex
+	We found that in part 1, increasing the number of threads trended towards increasing the cost in operations related to mutexes, whereas in part 2, these operations seemed unaffected by the increasing number of threads.
+	Both curves seem to level off facing an increase in the number of threads, likely caused by the increasing time in waiting for the mutex. 
+
+2.2.2 - scalability of spin locks
+	For a low number of threads, spin locks seem to cost less, but in greater numbers, the overhead of spin locks becomes far more significant. Thus, they are better for handling fewer threads but worse at handling more threads. This is apparent in the add program, but it is harder to notice in the list program. With a spin lock, the CPU cycles are spent spinning instead of doing work, but with a mutex, if a section is locked, the CPU will just ignore it and move onto something else.
